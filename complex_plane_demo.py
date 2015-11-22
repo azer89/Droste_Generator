@@ -21,6 +21,19 @@ for i in range(len(x) - 1):
     plt.plot([r * np.sin(a1), r * np.sin(a2)], [r * np.cos(a1), r * np.cos(a2)], 'k-', lw=0.5)
 '''
 
+e = np.zeros(len(x), dtype="complex")
+
+# exp(i * theta)
+for i in range(len(x)):
+    theta = x[i]
+    e[i] = np.exp(1j * theta)
+
+for i in e:
+    real_val = np.real(e)
+    imag_val = np.imag(e)    
+    plt.plot(real_val, imag_val, 'ro')
+
+
 plt.axes().set_aspect('equal')
 plt.show()
     
