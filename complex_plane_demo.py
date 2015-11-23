@@ -21,17 +21,35 @@ for i in range(len(x) - 1):
     plt.plot([r * np.sin(a1), r * np.sin(a2)], [r * np.cos(a1), r * np.cos(a2)], 'k-', lw=0.5)
 '''
 
-e = np.zeros(len(x), dtype="complex")
+e1 = np.zeros(len(x), dtype="complex")
+e2 = np.zeros(len(x), dtype="complex")
+r1 = 1.0
+r2 = 5.0
 
-# exp(i * theta)
 for i in range(len(x)):
     theta = x[i]
-    e[i] = np.exp(1j * theta)
+    e1[i] = r1 * np.exp(1j * theta)
+    e2[i] = r2 * np.exp(1j * theta)
+    #e1[i] = 1.0j * r2 + r1 * np.exp(1j * theta)
+    #e2[i] = 1.0j * r2 + r2 * np.exp(1j * theta)
+    
+for i in range(len(x)):
+    theta = x[i]
+    #e1[i] = np.log(e1[i])
+    #e2[i] = np.log(e2[i])    
+    e1[i] = np.log(e1[i] / r1)
+    e2[i] = np.log(e2[i] / r1)
 
-for i in e:
-    real_val = np.real(e)
-    imag_val = np.imag(e)    
-    plt.plot(real_val, imag_val, 'ro')
+plt.clf()
+
+for i in range(len(e1)):
+    r_val1 = np.real(e1[i])
+    i_val1 = np.imag(e1[i])    
+    plt.plot(r_val1, i_val1, 'ro')
+    
+    r_val2 = np.real(e2[i])
+    i_val2 = np.imag(e2[i])    
+    plt.plot(r_val2, i_val2, 'bo')
 
 
 plt.axes().set_aspect('equal')
