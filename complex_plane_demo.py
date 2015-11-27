@@ -24,6 +24,8 @@ for i in range(len(x) - 1):
     plt.plot([r * np.sin(a1), r * np.sin(a2)], [r * np.cos(a1), r * np.cos(a2)], 'k-', lw=0.5)
 '''
 
+
+
 e1 = np.zeros(len(x), dtype="complex")
 e2 = np.zeros(len(x), dtype="complex")
 r1 = 1.0
