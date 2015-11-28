@@ -1,5 +1,9 @@
 """
-droste
+Droste effect
+
+References:
+    http://www.josleys.com/article_show.php?id=82#ref3
+    https://github.com/tcoxon/droste/blob/master/droste.c
 """
 
 import numpy as np
