@@ -118,7 +118,7 @@ if __name__ == "__main__":
                 continue       
             
             ori_col = img_col[x_iter][y_iter]             
-            plt.plot(new_x, new_y, "^", color=(ori_col[0] / 255.0, ori_col[1] / 255.0, ori_col[2] / 255.0))
+            plt.plot(new_x, new_y, "o", color=(ori_col[0] / 255.0, ori_col[1] / 255.0, ori_col[2] / 255.0))
             
             """
             repeat_array = range(repeat_min, repeat_max)
@@ -154,14 +154,4 @@ if __name__ == "__main__":
     fig.gca().add_artist(circle1)
     fig.gca().add_artist(circle2)
     plt.show()
-    
-    """
-    # show the droste image
-    plt.figure(2)
-    plt.clf()
-    plt.imshow(img_droste) 
-    plt.savefig("droste_image.png")
-        
-    print "Calculation is completed"
-    """
     

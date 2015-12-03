@@ -81,7 +81,7 @@ The main function
 if __name__ == "__main__":
     # load the image
 
-    img_col = matplotlib.image.imread("dc_clock.png")
+    img_col = matplotlib.image.imread("images/dc_clock.png")
     img_col = (img_col * 255).astype(np.uint8)
     height, width, depth = img_col.shape    
     img_droste = np.zeros(img_col.shape, dtype="uint8") 
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     plt.figure(2)
     plt.clf()
     plt.imshow(img_droste) 
-    plt.savefig("droste_image.png")
+    #plt.savefig("droste_image.png")
     
     print "Calculation is completed"
     

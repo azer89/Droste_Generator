@@ -3,11 +3,7 @@ Droste vis 3
 """
 
 """
-Droste effect
-
-References:
-    http://www.josleys.com/article_show.php?id=82#ref3
-    https://github.com/tcoxon/droste/
+Visualing the log-polar coordinate
 """
 
 #import sys
@@ -15,10 +11,12 @@ import numpy as np
 import matplotlib
 import matplotlib.pylab as plt
 
+
 """
 Magenta color as the mask color
 """
 transp_color = np.array([255, 0, 255])
+
 
 """
 Global variables
@@ -35,11 +33,9 @@ Make sure a corrdinate is valid
 """
 def IsCoordValid(x, y):
     if(np.isnan(x) or np.isinf(x)):
-        return False
-                
+        return False                
     if(np.isnan(y) or np.isinf(y)):
-        return False
-    
+        return False    
     return True
 
 
@@ -95,10 +91,6 @@ if __name__ == "__main__":
     r1       = GetMaskBound(img_col)
     r2       = origin_y if origin_y < origin_x else origin_x
     
-    # adjustment
-    #r1 *= 0.8    
-    #r1 *= 0.6
-    
     log_r1     = np.log(r1)
     r2_over_r1 = r2 / r1
     period     = np.log(r2_over_r1)
@@ -122,17 +114,14 @@ if __name__ == "__main__":
             
             # display
             xy1 = complex(np.real(xy1) * (np.log(r2) / width), np.imag(xy1) * (pi2 / height) )            
-            
-            
+                        
             repeat_array = range(repeat_min, repeat_max)
             for rep_iter in repeat_array:
                 period_rep = period * (rep_iter)
-                xy2 = xy1 + complex(period_rep, 0)
-                
+                xy2 = xy1 + complex(period_rep, 0)                
                 
                 # 2nd transform
-                xy3 = xy2 * f * exp_alpha 
-                
+                xy3 = xy2 * f * exp_alpha                 
                 
                 # 3rd transform
                 #xy4 = np.exp(xy3) 
@@ -170,7 +159,7 @@ if __name__ == "__main__":
     plt.figure(2)
     plt.clf()
     plt.imshow(img_droste) 
-    plt.savefig("droste_image.png")
+    #plt.savefig("droste_image.png")
     
     print "Calculation is completed"
     
