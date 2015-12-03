@@ -1,8 +1,16 @@
+"""
+Droste vis 3
+"""
 
 """
-Droste Visualization
+Droste effect
+
+References:
+    http://www.josleys.com/article_show.php?id=82#ref3
+    https://github.com/tcoxon/droste/
 """
 
+#import sys
 import numpy as np
 import matplotlib
 import matplotlib.pylab as plt
@@ -27,9 +35,11 @@ Make sure a corrdinate is valid
 """
 def IsCoordValid(x, y):
     if(np.isnan(x) or np.isinf(x)):
-        return False                
+        return False
+                
     if(np.isnan(y) or np.isinf(y)):
-        return False    
+        return False
+    
     return True
 
 
@@ -75,7 +85,7 @@ The main function
 if __name__ == "__main__":
     # load the image
 
-    img_col = matplotlib.image.imread("images/pc.png")
+    img_col = matplotlib.image.imread("images/dc_clock.png")
     img_col = (img_col * 255).astype(np.uint8)
     height, width, depth = img_col.shape    
     img_droste = np.zeros(img_col.shape, dtype="uint8") 
@@ -85,67 +95,68 @@ if __name__ == "__main__":
     r1       = GetMaskBound(img_col)
     r2       = origin_y if origin_y < origin_x else origin_x
     
+    # adjustment
+    #r1 *= 0.8    
+    #r1 *= 0.6
     
     log_r1     = np.log(r1)
     r2_over_r1 = r2 / r1
     period     = np.log(r2_over_r1)
     pi2        = np.pi * 2.0
     
-    repeat_min = -1 # outward repeat
-    repeat_max = 3 # inward repeat
+    repeat_min = -5 # outward repeat
+    repeat_max = 10 # inward repeat
            
     
     alpha = np.arctan(np.log(r2 / r1) / pi2)
     f = np.cos(alpha)
     exp_alpha = np.exp(1j * alpha)
         
-    plt.figure(1)
-    plt.clf()
     for x_iter in range(width):
-        for y_iter in range(height): 
-
+        for y_iter in range(height):
+            
             xy1 = complex(x_iter - origin_x, y_iter - origin_y) 
-            #xy1 = complex(x_iter, y_iter)            
             
             # 1st transform
-            xy1 = np.log(xy1) - log_r1 
-            #xy1 = np.log(xy1)         
+            #xy1 = np.log(xy1) - log_r1 
             
-            new_x = np.real(xy1)
-            new_y = np.imag(xy1)            
+            # display
+            xy1 = complex(np.real(xy1) * (np.log(r2) / width), np.imag(xy1) * (pi2 / height) )            
             
-            if not (IsCoordValid(new_x, new_y)):
-                continue       
             
-            ori_col = img_col[x_iter][y_iter]             
-            plt.plot(new_x, new_y, "^", color=(ori_col[0] / 255.0, ori_col[1] / 255.0, ori_col[2] / 255.0))
-            
-            """
             repeat_array = range(repeat_min, repeat_max)
             for rep_iter in repeat_array:
                 period_rep = period * (rep_iter)
-                xy2 = xy1 + complex(period_rep, 0)            
-                            
-                #2nd transform
-                xy3 = xy2 * f * exp_alpha 
-#    
-#                #3rd transform            
-                xy4 = np.exp(xy3)
+                xy2 = xy1 + complex(period_rep, 0)
                 
-                new_x = np.real(xy4)
-                new_y = np.imag(xy4)            
+                
+                # 2nd transform
+                xy3 = xy2 * f * exp_alpha 
+                
+                
+                # 3rd transform
+                #xy4 = np.exp(xy3) 
+                #xy4 = np.exp(xy3)
+                xy3 = np.exp(xy2)               
+
+                new_x = np.real(xy3) + origin_x
+                new_y = np.imag(xy3) + origin_y        
+                #new_x = np.real(xy4) + origin_x
+                #new_y = np.imag(xy4) + origin_y
                 
                 if not (IsCoordValid(new_x, new_y)):
-                    continue            
-                ori_col = img_col[x_iter][y_iter]             
-                plt.plot(new_x, new_y, "^", color=(ori_col[0] / 255.0, ori_col[1] / 255.0, ori_col[2] / 255.0))
-            """
+                    continue     
                 
-    plt.show()
+                #print new_x, " ", new_y
                 
+                if(IsInside(new_x, new_y, width, height)):
+                    ori_col = img_col[int(new_y)][int(new_x)]
+                    if not(IsMasked(ori_col)):
+                        img_droste[y_iter][x_iter] = ori_col
+                        break
     
     # print the original
-    plt.figure(2)
+    plt.figure(1)
     plt.clf()
     plt.imshow(img_col)
     circle1 = plt.Circle((origin_x, origin_y), r1, linestyle="dashed", facecolor="none", edgecolor="blue") 
@@ -155,13 +166,12 @@ if __name__ == "__main__":
     fig.gca().add_artist(circle2)
     plt.show()
     
-    """
     # show the droste image
     plt.figure(2)
     plt.clf()
     plt.imshow(img_droste) 
     plt.savefig("droste_image.png")
-        
+    
     print "Calculation is completed"
-    """
+    
     
