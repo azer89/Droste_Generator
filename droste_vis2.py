@@ -107,16 +107,25 @@ if __name__ == "__main__":
             xy1 = complex(x_iter - origin_x, y_iter - origin_y) 
             #xy1 = complex(x_iter, y_iter)            
             
-             # 1st transform
-            xy1 = np.log(xy1) - log_r1             
+            # 1st transform
+            #xy1 = np.log(xy1) - log_r1 
+            xy1 = np.log(xy1)         
             
+            new_x = np.real(xy1)
+            new_y = np.imag(xy1)            
+            
+            if not (IsCoordValid(new_x, new_y)):
+                continue       
+            
+            ori_col = img_col[x_iter][y_iter]             
+            plt.plot(new_x, new_y, "^", color=(ori_col[0] / 255.0, ori_col[1] / 255.0, ori_col[2] / 255.0))
+            
+            """
             repeat_array = range(repeat_min, repeat_max)
             for rep_iter in repeat_array:
                 period_rep = period * (rep_iter)
                 xy2 = xy1 + complex(period_rep, 0)            
-            
-
-                
+                            
                 #2nd transform
                 xy3 = xy2 * f * exp_alpha 
 #    
@@ -130,6 +139,7 @@ if __name__ == "__main__":
                     continue            
                 ori_col = img_col[x_iter][y_iter]             
                 plt.plot(new_x, new_y, "^", color=(ori_col[0] / 255.0, ori_col[1] / 255.0, ori_col[2] / 255.0))
+            """
                 
     plt.show()
                 

@@ -81,7 +81,7 @@ The main function
 if __name__ == "__main__":
     # load the image
 
-    img_col = matplotlib.image.imread("reza.png")
+    img_col = matplotlib.image.imread("dc_clock.png")
     img_col = (img_col * 255).astype(np.uint8)
     height, width, depth = img_col.shape    
     img_droste = np.zeros(img_col.shape, dtype="uint8") 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     
     # adjustment
     #r1 *= 0.8    
-    r1 *= 0.8
+    #r1 *= 0.6
     
     log_r1     = np.log(r1)
     r2_over_r1 = r2 / r1
