@@ -6,24 +6,26 @@ References:
     https://github.com/tcoxon/droste/
 """
 
-#import sys
+
 import numpy as np
 import matplotlib
 import matplotlib.pylab as plt
+
 
 """
 Magenta color as the mask color
 """
 transp_color = np.array([255, 0, 255])
 
+
 """
 Global variables
 """
-height = None 
-width  = None 
-depth  = None
-origin_x = None
-origin_y = None
+height_origin = None 
+width_origin  = None
+depth         = None # RGB channels
+origin_x      = None
+origin_y      = None
 
 
 """
@@ -31,11 +33,9 @@ Make sure a corrdinate is valid
 """
 def IsCoordValid(x, y):
     if(np.isnan(x) or np.isinf(x)):
-        return False
-                
+        return False                
     if(np.isnan(y) or np.isinf(y)):
-        return False
-    
+        return False    
     return True
 
 
@@ -47,6 +47,7 @@ def IsInside(x, y, width, height):
         return True
     return False
 
+
 """
 Determine whether a color is the mask color
 """
@@ -55,10 +56,11 @@ def IsMasked(col):
         return True
     return False
 
+
 """
 Obtain the inner radius
 """
-def GetMaskBound(img_col):
+def GetInnerBound(img_col):
     r1 = 0    
     height, width, depth = img_col.shape
     origin_x   = width  / 2.0
@@ -73,47 +75,49 @@ def GetMaskBound(img_col):
                 if (r > r1):
                     r1 = r
     return r1
-    
+
     
 """
 The main function
 """
 if __name__ == "__main__":
+    
     # load the image
-
-    img_col = matplotlib.image.imread("images/dc_clock.png")
+    img_col = matplotlib.image.imread("images/pc.png")
     img_col = (img_col * 255).astype(np.uint8)
-    height, width, depth = img_col.shape    
+    height_origin, width_origin, depth = img_col.shape    
     img_droste = np.zeros(img_col.shape, dtype="uint8") 
 
-    origin_x = width  / 2.0
-    origin_y = height / 2.0
-    r1       = GetMaskBound(img_col)
+    origin_x = width_origin  / 2.0
+    origin_y = height_origin / 2.0
+    r1       = GetInnerBound(img_col)
     r2       = origin_y if origin_y < origin_x else origin_x
     
     # adjustment
     #r1 *= 0.8    
     #r1 *= 0.6
     
+    # precompute varibles
     log_r1     = np.log(r1)
     r2_over_r1 = r2 / r1
     period     = np.log(r2_over_r1)
     pi2        = np.pi * 2.0
     
+    # number of repeats
     repeat_min = -5 # outward repeat
     repeat_max = 10 # inward repeat
-           
-    
+               
+    # these are for 2nd stage
     alpha = np.arctan(np.log(r2 / r1) / pi2)
     f = np.cos(alpha)
     exp_alpha = np.exp(1j * alpha)
         
-    for x_iter in range(width):
-        for y_iter in range(height):
+    for x_iter in range(width_origin):
+        for y_iter in range(height_origin):
             
             xy1 = complex(x_iter - origin_x, y_iter - origin_y) 
             
-            # 1st transform
+            # 1st stage
             xy1 = np.log(xy1) - log_r1 
             
             repeat_array = range(repeat_min, repeat_max)
@@ -121,10 +125,10 @@ if __name__ == "__main__":
                 period_rep = period * (rep_iter)
                 xy2 = xy1 + complex(period_rep, 0)
                 
-                # 2nd transform
+                # 2nd stage
                 xy3 = xy2 * f * exp_alpha 
                 
-                # 3rd transform
+                # 3rd stage
                 xy4 = np.exp(xy3)  
                 
                 new_x = np.real(xy4) + origin_x
@@ -133,13 +137,13 @@ if __name__ == "__main__":
                 if not (IsCoordValid(new_x, new_y)):
                     continue            
                 
-                if(IsInside(new_x, new_y, width, height)):
+                if(IsInside(new_x, new_y, width_origin, height_origin)):
                     ori_col = img_col[int(new_y)][int(new_x)] 
                     if not(IsMasked(ori_col)):
                         img_droste[y_iter][x_iter] = ori_col
                         break
     
-    # print the original
+    # print the original and show r1 and r2
     plt.figure(1)
     plt.clf()
     plt.imshow(img_col)
