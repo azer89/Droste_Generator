@@ -1,4 +1,7 @@
 """
+
+radhitya@uwaterloo.ca
+
 Droste effect
 
 References:
@@ -29,18 +32,19 @@ origin_y      = None
 
 
 """
-Make sure a corrdinate is valid
+Make sure a coordinate is valid
+(or is this because a bug in my program?)
 """
 def IsCoordValid(x, y):
     if(np.isnan(x) or np.isinf(x)):
-        return False                
+        return False            
     if(np.isnan(y) or np.isinf(y)):
-        return False    
+        return False
     return True
 
 
 """
-Is inside the image
+make sure a coordinate is inside the image
 """
 def IsInside(x, y, width, height):
     if(x >= 0 and y >= 0 and x < width and y < height):
@@ -63,8 +67,8 @@ Obtain the inner radius
 def GetInnerBound(img_col):
     r1 = 0    
     height, width, depth = img_col.shape
-    origin_x   = width  / 2.0
-    origin_y   = height / 2.0
+    origin_x = width  / 2.0
+    origin_y = height / 2.0
     for y_iter in range(height):
         for x_iter in range(width):
             col = img_col[y_iter][x_iter]
@@ -93,11 +97,11 @@ if __name__ == "__main__":
     r1       = GetInnerBound(img_col)
     r2       = origin_y if origin_y < origin_x else origin_x
     
-    # adjustment
+    # adjustment, this is a dirty trick
     #r1 *= 0.8    
     #r1 *= 0.6
     
-    # precompute varibles
+    # precompute variables
     log_r1     = np.log(r1)
     r2_over_r1 = r2 / r1
     period     = np.log(r2_over_r1)
@@ -117,7 +121,7 @@ if __name__ == "__main__":
             
             xy1 = complex(x_iter - origin_x, y_iter - origin_y) 
             
-            # 1st stage
+            # 1st stage, to polar coordinate
             xy1 = np.log(xy1) - log_r1 
             
             repeat_array = range(repeat_min, repeat_max)
@@ -125,10 +129,10 @@ if __name__ == "__main__":
                 period_rep = period * (rep_iter)
                 xy2 = xy1 + complex(period_rep, 0)
                 
-                # 2nd stage
+                # 2nd stage, rotate and shrink
                 xy3 = xy2 * f * exp_alpha 
                 
-                # 3rd stage
+                # 3rd stage, exponentiation
                 xy4 = np.exp(xy3)  
                 
                 new_x = np.real(xy4) + origin_x
