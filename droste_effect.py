@@ -69,8 +69,8 @@ def GetInnerBound(img_col):
     height, width, depth = img_col.shape
     origin_x = width  / 2.0
     origin_y = height / 2.0
-    for y_iter in range(height):
-        for x_iter in range(width):
+    for y_iter in xrange(height):
+        for x_iter in xrange(width):
             col = img_col[y_iter][x_iter]
             if(IsMasked(col)): 
                 x = x_iter - origin_x
@@ -116,16 +116,17 @@ if __name__ == "__main__":
     f = np.cos(alpha)
     exp_alpha = np.exp(1j * alpha)
         
-    for x_iter in range(width_origin):
-        for y_iter in range(height_origin):
+    for x_iter in xrange(width_origin):
+        for y_iter in xrange(height_origin):
             
             xy1 = complex(x_iter - origin_x, y_iter - origin_y) 
             
             # 1st stage, to polar coordinate
             xy1 = np.log(xy1) - log_r1 
             
-            repeat_array = range(repeat_min, repeat_max)
-            for rep_iter in repeat_array:
+            #repeat_array = range(repeat_min, repeat_max)
+            #for rep_iter in repeat_array:
+            for rep_iter in xrange(repeat_min, repeat_max) :               
                 period_rep = period * (rep_iter)
                 xy2 = xy1 + complex(period_rep, 0)
                 
