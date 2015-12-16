@@ -22,16 +22,6 @@ transp_color = np.array([255, 0, 255])
 
 
 """
-Global variables
-"""
-height_origin = None 
-width_origin  = None
-depth         = None # RGB channels
-origin_x      = None
-origin_y      = None
-
-
-"""
 Make sure a coordinate is valid
 (or is this because a bug in my program?)
 """
@@ -60,57 +50,41 @@ def IsMasked(col):
         return True
     return False
 
-
 """
-Obtain the inner radius
+Calculate the center of the mask and the approximate radius
 """
-def GetInnerBound(img_col):
-    r1 = 0    
-    height, width, depth = img_col.shape
-    origin_x = width  / 2.0
-    origin_y = height / 2.0
-    for y_iter in xrange(height):
-        for x_iter in xrange(width):
-            col = img_col[y_iter][x_iter]
-            if(IsMasked(col)): 
-                x = x_iter - origin_x
-                y = y_iter - origin_y
-                r = np.sqrt(x * x + y * y)
-                if (r > r1):
-                    r1 = r
-    return r1
-    
 def CalculateCenter(img_col):
     r1 = 0.0
-    origin_x = 0.0
-    origin_y = 0.0
+    center_x = 0.0
+    center_y = 0.0
     pixel_counter = 0.0   
     
-    xs = []
-    ys = []
+    xs = [] # list of x-coordinates
+    ys = [] # list of y-coordinates
     
     height, width, depth = img_col.shape
     for y_iter in xrange(height):
         for x_iter in xrange(width):
             col = img_col[y_iter][x_iter]
             if(IsMasked(col)):
-                origin_x += x_iter
-                origin_y += y_iter
+                center_x += x_iter
+                center_y += y_iter
                 xs.append(x_iter)
                 ys.append(y_iter)                
                 pixel_counter += 1.0
                 
-    origin_x /= pixel_counter
-    origin_y /= pixel_counter
+    center_x /= pixel_counter
+    center_y /= pixel_counter
                 
     for i in xrange(len(xs)):
-        x = xs[i] - origin_x
-        y = xs[i] - origin_y
+        x = xs[i] - center_x
+        y = ys[i] - center_y
         r = np.sqrt(x * x + y * y)
         if (r > r1):
             r1 = r
             
-    return r1, origin_x, origin_y        
+    # return the radius and the center
+    return r1, center_x, center_y        
     
 
     
@@ -120,22 +94,14 @@ The main function
 if __name__ == "__main__":
     
     # load the image
-    img_col = matplotlib.image.imread("images/dc_clock.png")
+    img_col = matplotlib.image.imread("images/pc.png")
     img_col = (img_col * 255).astype(np.uint8)
     height_origin, width_origin, depth = img_col.shape    
     img_droste = np.zeros(img_col.shape, dtype="uint8") 
-
-    #origin_x = width_origin  / 2.0
-    #origin_y = height_origin / 2.0
-    #r1       = GetInnerBound(img_col)
-    r1, origin_x, origin_y = CalculateCenter(img_col)
-    r2       = origin_y if origin_y < origin_x else origin_x
     
-    
-    # adjustment, this is a dirty trick
-    #r1 *= 0.8    
-    #r1 *= 0.6
-    
+    r1, center_x, center_y = CalculateCenter(img_col)
+    r2 = center_y if center_y < center_x else center_x
+        
     # precompute variables
     log_r1     = np.log(r1)
     r2_over_r1 = r2 / r1
@@ -154,13 +120,11 @@ if __name__ == "__main__":
     for x_iter in xrange(width_origin):
         for y_iter in xrange(height_origin):
             
-            xy1 = complex(x_iter - origin_x, y_iter - origin_y) 
+            xy1 = complex(x_iter - center_x, y_iter - center_y) 
             
             # 1st stage, to polar coordinate
             xy1 = np.log(xy1) - log_r1 
             
-            #repeat_array = range(repeat_min, repeat_max)
-            #for rep_iter in repeat_array:
             for rep_iter in xrange(repeat_min, repeat_max) :               
                 period_rep = period * (rep_iter)
                 xy2 = xy1 + complex(period_rep, 0)
@@ -171,12 +135,14 @@ if __name__ == "__main__":
                 # 3rd stage, exponentiation
                 xy4 = np.exp(xy3)  
                 
-                new_x = np.real(xy4) + origin_x
-                new_y = np.imag(xy4) + origin_y
+                new_x = np.real(xy4) + center_x
+                new_y = np.imag(xy4) + center_y
                 
+                # somehow my code produces Nan or Inf (why?)
                 if not (IsCoordValid(new_x, new_y)):
                     continue            
                 
+                # the new coordinate should be inside the image
                 if(IsInside(new_x, new_y, width_origin, height_origin)):
                     ori_col = img_col[int(new_y)][int(new_x)] 
                     if not(IsMasked(ori_col)):
@@ -187,9 +153,9 @@ if __name__ == "__main__":
     plt.figure(1)
     plt.clf()
     plt.imshow(img_col)
-    plt.plot(origin_x, origin_y,'x', color="blue", markersize=7)
-    circle1 = plt.Circle((origin_x, origin_y), r1, linestyle="dashed", facecolor="none", edgecolor="blue") 
-    circle2 = plt.Circle((origin_x, origin_y), r2, linestyle="dashed", facecolor="none", edgecolor="red") 
+    plt.plot(center_x, center_y,'o', color="blue", markersize=7)
+    circle1 = plt.Circle((center_x, center_y), r1, linestyle="dashed", facecolor="none", edgecolor="blue") 
+    circle2 = plt.Circle((center_x, center_y), r2, linestyle="dashed", facecolor="none", edgecolor="red") 
     fig = plt.gcf()
     fig.gca().add_artist(circle1)
     fig.gca().add_artist(circle2)
