@@ -14,9 +14,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pylab as plt
 
-import drostelib.drostelib as dl
-
-    
+import drostelib.drostehelper as dh    
 
     
 """
@@ -30,7 +28,7 @@ if __name__ == "__main__":
     height_origin, width_origin, depth = img_col.shape    
     img_droste = np.zeros(img_col.shape, dtype="uint8") 
     
-    r1, center_x, center_y = dl.CalculateCenter(img_col)
+    r1, center_x, center_y = dh.CalculateCenter(img_col)
     r2 = center_y if center_y < center_x else center_x
         
     # precompute variables
@@ -71,13 +69,13 @@ if __name__ == "__main__":
                 new_y = np.imag(xy4) + center_y
                 
                 # somehow my code produces Nan or Inf (why?)
-                if not (dl.IsCoordValid(new_x, new_y)):
+                if not (dh.IsCoordValid(new_x, new_y)):
                     continue            
                 
                 # the new coordinate should be inside the image
-                if(dl.IsInside(new_x, new_y, width_origin, height_origin)):
+                if(dh.IsInside(new_x, new_y, width_origin, height_origin)):
                     ori_col = img_col[int(new_y)][int(new_x)] 
-                    if not(dl.IsMasked(ori_col)):
+                    if not(dh.IsMasked(ori_col)):
                         img_droste[y_iter][x_iter] = ori_col
                         break
     
