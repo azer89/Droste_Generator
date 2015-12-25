@@ -14,52 +14,19 @@ import numpy as np
 import matplotlib
 import matplotlib.pylab as plt
 
-
-"""
-Magenta color as the mask color
-"""
-transp_color = np.array([255, 0, 255])
+import drostelib.drostehelper as dh 
 
 
 """
 Global variables
+"""
 """
 height_origin = None 
 width_origin  = None
 depth         = None # RGB channels
 origin_x      = None
 origin_y      = None
-
-
 """
-Make sure a coordinate is valid
-(or is this because a bug in my program?)
-"""
-def IsCoordValid(x, y):
-    if(np.isnan(x) or np.isinf(x)):
-        return False            
-    if(np.isnan(y) or np.isinf(y)):
-        return False
-    return True
-
-
-"""
-make sure a coordinate is inside the image
-"""
-def IsInside(x, y, width, height):
-    if(x >= 0 and y >= 0 and x < width and y < height):
-        return True
-    return False
-
-
-"""
-Determine whether a color is the mask color
-"""
-def IsMasked(col):    
-    if(col[0] == transp_color[0] and col[1] == transp_color[1] and col[2] == transp_color[2]):
-        return True
-    return False
-
 
 """
 Obtain the inner radius
@@ -72,7 +39,7 @@ def GetInnerBound(img_col):
     for y_iter in xrange(height):
         for x_iter in xrange(width):
             col = img_col[y_iter][x_iter]
-            if(IsMasked(col)): 
+            if(dh.IsMasked(col)): 
                 x = x_iter - origin_x
                 y = y_iter - origin_y
                 r = np.sqrt(x * x + y * y)
@@ -139,12 +106,12 @@ if __name__ == "__main__":
                 new_x = np.real(xy4) + origin_x
                 new_y = np.imag(xy4) + origin_y
                 
-                if not (IsCoordValid(new_x, new_y)):
+                if not (dh.IsCoordValid(new_x, new_y)):
                     continue            
                 
-                if(IsInside(new_x, new_y, width_origin, height_origin)):
+                if(dh.IsInside(new_x, new_y, width_origin, height_origin)):
                     ori_col = img_col[int(new_y)][int(new_x)] 
-                    if not(IsMasked(ori_col)):
+                    if not(dh.IsMasked(ori_col)):
                         img_droste[y_iter][x_iter] = ori_col
                         break
     

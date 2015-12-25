@@ -6,8 +6,6 @@ Created on Thu Dec 24 12:59:31 2015
 """
 
 import numpy as np
-import matplotlib
-import matplotlib.pylab as plt
 
 
 """
