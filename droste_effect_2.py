@@ -31,6 +31,8 @@ if __name__ == "__main__":
     
     r1, center_x, center_y = dh.CalculateCenter(img_col)
     r2 = center_y if center_y < center_x else center_x
+    # you can modify with something like:
+    # r2 = r2 * 0.8
         
     # precompute variables
     log_r1     = np.log(r1)
