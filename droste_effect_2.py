@@ -23,6 +23,7 @@ The main function
 if __name__ == "__main__":
     
     # load the image
+    # there is a possible bug: it only wants .png files
     img_col = matplotlib.image.imread("images/pc.png")
     img_col = (img_col * 255).astype(np.uint8)
     height_origin, width_origin, depth = img_col.shape    
