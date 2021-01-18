@@ -24,7 +24,7 @@ if __name__ == "__main__":
     
     # load the image
     # there is a possible bug: it only wants .png files
-    img_col = matplotlib.image.imread("images/pc_large.png")
+    img_col = matplotlib.image.imread("images/dc_clock.png")
     img_col = (img_col * 255).astype(np.uint8)
     height_origin, width_origin, depth = img_col.shape    
     img_droste = np.zeros(img_col.shape, dtype="uint8") 
